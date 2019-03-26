@@ -18,6 +18,12 @@ require_relative './sqlzoo.rb'
 def null_dept
   # List the teachers who have NULL for their department.
   execute(<<-SQL)
+    SELECT
+      name
+    FROM
+      teachers
+    WHERE
+      dept_id IS NULL
   SQL
 end
 
@@ -25,6 +31,12 @@ def all_teachers_join
   # Use a type of JOIN that will list all teachers and their department,
   # even if the department in NULL/nil.
   execute(<<-SQL)
+    SELECT
+      teachers.name, depts.name
+    FROM
+      teachers
+    LEFT JOIN 
+      depts ON teachers.dept_id = depts.id
   SQL
 end
 
@@ -33,6 +45,12 @@ def all_depts_join
   # NB: you can avoid RIGHT OUTER JOIN (and just use LEFT) by swapping
   # the FROM and JOIN tables.
   execute(<<-SQL)
+    SELECT
+      teachers.name, depts.name
+    FROM
+      depts
+    LEFT JOIN
+      teachers ON depts.id = teachers.dept_id
   SQL
 end
 
@@ -41,6 +59,10 @@ def teachers_and_mobiles
   # 444 2266' if no number is given. Show teacher name and mobile
   # #number or '07986 444 2266'
   execute(<<-SQL)
+    SeLeCt
+      teachers.name, cOaLeScE(teachers.mobile, '07986 444 2266')
+    fRoM
+      teachers
   SQL
 end
 
@@ -49,6 +71,12 @@ def teachers_and_depts
   # department name. Use the string 'None' where there is no
   # department.
   execute(<<-SQL)
+    sElEcT
+      teachers.name, CoAlEsCe(depts.name, 'None')
+    FrOm
+      teachers
+    lEfT jOiN
+      depts ON teachers.dept_id = depts.id
   SQL
 end
 
@@ -57,6 +85,10 @@ def num_teachers_and_mobiles
   # mobile phones.
   # NB: COUNT only counts non-NULL values.
   execute(<<-SQL)
+    SeLeCt
+      count(teachers), count(mobile)
+    fRoM
+      teachers
   SQL
 end
 
@@ -65,6 +97,14 @@ def dept_staff_counts
   # the number of staff. Structure your JOIN to ensure that the
   # Engineering department is listed.
   execute(<<-SQL)
+    sElEcT
+      depts.name, CoAlEsCe(count(teachers.dept_id), '0')
+    FrOm
+      depts
+    lEfT jOiN
+      teachers ON depts.id = teachers.dept_id
+    GrOuP bY
+      depts.name
   SQL
 end
 
@@ -72,6 +112,16 @@ def teachers_and_divisions
   # Use CASE to show the name of each teacher followed by 'Sci' if
   # the the teacher is in dept 1 or 2 and 'Art' otherwise.
   execute(<<-SQL)
+    SeLeCt
+      teachers.name, 
+      cAsE
+        wHeN teachers.dept_id bEtWeEn 1 AND 2 THEN 'Sci'
+        ELSE 'Art'
+      eNd As WhAtEvEr
+    fRoM
+      teachers
+    lEfT jOiN
+      depts ON teachers.dept_id = depts.id
   SQL
 end
 
